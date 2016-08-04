@@ -12,6 +12,7 @@
 namespace Certificationy\Cli\Command;
 
 use Certificationy\Certification\Loader;
+use Certificationy\Certification\Question;
 use Certificationy\Certification\Set;
 
 use Symfony\Component\Console\Command\Command;
@@ -122,6 +123,23 @@ class StartCommand extends Command
             }
 
             $output->writeln('<comment>✎ Your answer</comment>: ' . $answer . "\n");
+
+            $this->saveToCache($question);
+        }
+    }
+    
+    private function saveToCache(Question $question)
+    {
+        $file = __DIR__.'/../cache/answered.php';
+
+        $question = $question->getQuestion();
+
+        if (file_exists($file)) {
+            $array = unserialize(file_get_contents($file));
+            $array[] = $question;
+            file_put_contents($file, serialize($array));
+        } else {
+            file_put_contents($file, serialize([$question]));
         }
     }
 
